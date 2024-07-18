@@ -1,0 +1,3 @@
+[submodule "ldmx-sw"]
+	path = ldmx-sw
+	url = git@github.com:RobMina/ldmx-sw-visdecay.git
