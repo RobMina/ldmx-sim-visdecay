@@ -1,7 +1,7 @@
 import math
 import os
 
-run_script = "/home/ram2aq/ldmx/run_db_gen_then_extract.sh"
+run_script = "scripts/run_db_gen_then_extract.sh"
 def write_slurm_to_fh(fh, run_number, material, mass, energy, events, output_path):
     fh.write("#!/bin/bash\n")
     fh.write("\n")

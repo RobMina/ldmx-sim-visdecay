@@ -73,30 +73,30 @@ import LDMX.Recon.electronCounter as count
 
 #from LDMX.Analysis import eat
 
-#counter = count.ElectronCounter(1, 'counter')
-#counter.input_pass_name = 'eat'
-#counter.input_collection = 'TriggerPadTracksY'
+counter = count.ElectronCounter(1, 'counter')
+counter.input_pass_name = 'eat_vis'
+counter.input_collection = 'TriggerPadTracksY'
 
-#trigger = trig.TriggerProcessor('trigger', 8000.)
-#trigger.beamEnergy = 8000.
-#trigger.thresholds = [ 3160. ]
+trigger = trig.TriggerProcessor('trigger', 8000.)
+trigger.beamEnergy = 8000.
+trigger.thresholds = [ 3160. ]
 
 p.sequence = [
         sim,
-        #ecal_digi.EcalDigiProducer(),
-        #ecal_digi.EcalRecProducer(),
-        #ecal_vetos.EcalVetoProcessor(),
-        #hcal_digi.HcalDigiProducer(),
-        #hcal_digi.HcalRecProducer(),
-        #TrigScintDigiProducer.pad1(),
-        #TrigScintDigiProducer.pad2(),
-        #TrigScintDigiProducer.pad3(),
-        #TrigScintClusterProducer.pad1(),
-        #TrigScintClusterProducer.pad2(),
-        #TrigScintClusterProducer.pad3(),
-        #trigScintTrack,
-        #counter,
-        #trigger,
+        ecal_digi.EcalDigiProducer(),
+        ecal_digi.EcalRecProducer(),
+        ecal_vetos.EcalVetoProcessor(),
+        hcal_digi.HcalDigiProducer(),
+        hcal_digi.HcalRecProducer(),
+        TrigScintDigiProducer.pad1(),
+        TrigScintDigiProducer.pad2(),
+        TrigScintDigiProducer.pad3(),
+        TrigScintClusterProducer.pad1(),
+        TrigScintClusterProducer.pad2(),
+        TrigScintClusterProducer.pad3(),
+        trigScintTrack,
+        counter,
+        trigger,
         #eat.PrimaryEcalFrontFaceKinematics(),
         #eat.PullNuclearEnergy(),
         #eat.DarkBremKinematics(),
