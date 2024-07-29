@@ -77,9 +77,15 @@ the generator to scale A' kinematics and decays using the updated G4DarkBreM
 module. Takes two arguments: the path to a MG dark brem library and the number
 of events to simulate.
 
+- `scripts/decay_validation.ipynb`: A Jupyter notebook with code to validate
+the handling of A' decays within G4DarkBreM.
+
 - `scripts/setup_ldmx_and_fire.sh`: setup, then call ldmx fire. Assumes that
 the config scripts takes the same arguments as `test_config.py`: namely, the
 path to a MG dark brem library and the number of events.
 
 - `scripts/gen_signal_samples.py`: automatically configure and launch grid jobs
-using sbatch to generate signal samples for each mass point.
+using sbatch to generate signal samples for each mass point and run number.
+Corresponding MG dark brem libraries must have already been created and must
+be in csv format. You should modify the paths defined near the bottom of this
+script before using it.

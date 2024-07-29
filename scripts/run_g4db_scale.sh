@@ -25,6 +25,7 @@ if [[ ! -f ${unscaled_fname} ]]; then
     exit 1
 fi
 
+mkdir -p ${dblib_dir}/scaled
 scaled_fname=${dblib_dir}/scaled/electron_${material}_mA_${mass}_E_${scale_to_energy}_scaledFrom_${scale_from_energy}_run_${run_number}.csv
 
 if [[ -f ${scaled_fname} ]]; then

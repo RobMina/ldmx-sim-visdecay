@@ -4,8 +4,6 @@ import os
 # this needs to be a relative path from the base of the ldmx-sim-visdecay repo
 run_script = "scripts/setup_ldmx_and_fire.sh"
 # path_to_ldmx_sim_visdecay is an _absolute_ path
-# output_path can be either absolute or relative
-# all other paths need to be _relative_ paths from the base of ldmx-sim-visdecay
 def write_slurm_to_fh(fh, path_to_ldmx_sim_visdecay, 
                       path_to_config_script, path_to_mg_db_lib, n_events,
                       output_path):
@@ -56,8 +54,30 @@ def write_slurm_to_fh(fh, path_to_ldmx_sim_visdecay,
         output_path=output_path
     ))
 
+def run_for_params(run_number, mass, path_to_ldmx_sim_visdecay, 
+                      path_to_config_script, db_lib_dir, n_events,
+                      output_path):
+    db_lib_fname = "{db_lib_dir}/all_mA_{mass}_run_{run_number}.csv".format(
+        db_lib_dir = db_lib_dir, mass = mass, run_number = run_number
+    )
+    slurm_fname = "{output_path}/all_mA_{mass}_run_{run_number}.slurm".format(
+        output_path = output_path, mass = mass, run_number = run_number
+    )
+    with open(slurm_fname, "w") as fh:
+        write_slurm_to_fh(fh, path_to_ldmx_sim_visdecay, path_to_config_script,
+                          db_lib_fname, n_events, output_path)
+    os.system("sbatch {slurm_fname}".format(slurm_fname=slurm_fname))
 
-with open("test.slurm", "w") as fh:
-    write_slurm_to_fh(fh, "/home/ram2aq/ldmx/ldmx-sim-visdecay", 
-                      "scripts/test_config.py", "all_mA_0.005_run_4000.csv",
-                      1000, "/home/ram2aq/ldmx/data/eat_vis_signal/")
+# you should modify the following:
+my_ldmx_sim_visdecay_path = "/home/ram2aq/test/ldmx-sim-visdecay"
+output_dir = "/scratch/ram2aq"
+# note: this one is defined _relative_ to the ldmx_sim_visdecay path
+config_path = "scripts/test_config.py"
+# note: this one is defined as an _absolute_ path
+db_lib_dir = "/standard/ldmxuva/data/dblib"
+
+for mass in [0.005, 0.01, 0.05, 0.1]:
+    for run_number in [4000]:
+        run_for_params(run_number, mass, my_ldmx_sim_visdecay_path,
+                       config_path, db_lib_dir,
+                       10000, output_dir)
