@@ -1,29 +1,40 @@
 
 ## Instructions to Setup and Run Simulation
 
-- Clone this repo: `git clone --recursive git@github.com:RobMina/ldmx-sim-visdecay.git`
+- Clone this repo:
+    `git clone --recursive git@github.com:RobMina/ldmx-sim-visdecay.git`
 
 - cd into the new directory:
-`cd ldmx-sim-visdecay`
+    `cd ldmx-sim-visdecay`
 
 - The container runner available on Rivanna is apptainer,
 but the ldmx-sw environment assumes we will be using either docker
 or singularity. So, we need to make an alias: 
-`module load apptainer`
-`alias singularity="apptainer"`
+    `module load apptainer`
+    `alias singularity="apptainer"`
 
 - Set the TMPDIR environment variable 
 (necessary for ldmx-env.sh to run the first time on Rivanna):
-`export TMPDIR=/scratch/<your Rivanna username>`
+    `export TMPDIR=/scratch/<your Rivanna username>`
 
 - Setup the ldmx-sw environment. 
 This will take a long time (~30 minutes) the first time you do it, but will be
 relatively quick after the first time.
-`source ldmx-sw/scripts/ldmx-env.sh`
+    `source ldmx-sw/scripts/ldmx-env.sh`
 
 - Compile the updated code. This also takes a while, but only the first 
 time.
-`ldmx compile`
+    `ldmx compile`
+
+- You are now ready to run the scripts listed below. The 
+`scripts/gen_unscaled_library.py` script is the most direct way to create a
+MG dark brem vertex library, which is needed by G4DarkBreM to simulate
+dark brem interactions within the detector. The `scripts/gen_signal_samples.py`
+script is the most direct way to run the detector simulation using ldmx, and
+it requires that the MG library has already been generated.
+
+- On Rivanna, a MG dark brem vertex library is in `/standard/ldmxuva/data/dblib`
+and some sample signal files are in `/standard/ldmxuva/data/eat_vis_signal`
 
 ## Table of Contents
 
