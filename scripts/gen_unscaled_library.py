@@ -43,7 +43,7 @@ masses = ["0.005", "0.01", "0.05", "0.1"]
 #            "6.18", "6.24", "6.3", "6.6", "6.9", "7.0", "7.5", "8.0"]
 energies = [ "1.0", "1.1", "1.2", "1.5" ]
 neventsPerPoint = 100000
-output_dir = "/home/ram2aq/ldmx/data/dblib"
+output_dir = "/standard/ldmxuva/data/dblib"
 run_number = 4000
 
 for material in materials:

@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import glob
 
-dblib_path = "/home/ram2aq/ldmx/data/dblib"
+dblib_path = "/standard/ldmxuva/data/dblib"
 
 ### run params: ( lepton, material, mA [GeV], scaled [bool], 
 ###               incident_energy [GeV], scaled_from_E [GeV], run number )
@@ -46,5 +46,5 @@ for material in materials:
     for mass in masses:
         unscaled = pd.concat(map(process_file, glob.iglob(dblib_path + "/electron_" + material + "_mA_" + mass + "_E_*_unscaled_run_*.csv")))
         scaled = pd.concat(map(process_file, glob.iglob(dblib_path + "/scaled/electron_" + material + "_mA_" + mass + "_E_*_scaledFrom_*_run_*.csv")))
-        unscaled.reset_index().to_feather("data/dblib_unscaled_electron_" + material + "_mA_" + mass + ".feather")
-        scaled.reset_index().to_feather("data/dblib_scaled_electron_" + material + "_mA_" + mass + ".feather")
+        unscaled.reset_index().to_feather("dblib_unscaled_electron_" + material + "_mA_" + mass + ".feather")
+        scaled.reset_index().to_feather("dblib_scaled_electron_" + material + "_mA_" + mass + ".feather")

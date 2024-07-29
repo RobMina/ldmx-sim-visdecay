@@ -1,12 +1,11 @@
 #!/bin/bash
-base_dir=/home/ram2aq/ldmx
+base_dir=${PWD}
 
-### set up G4DarkBreM
-source ${base_dir}/G4DarkBreM_mod/setup.sh
-module load gcc
-module load boost
+### setting up ldmx (needed for g4db-scale)
+ldmx_env_path=$base_dir/ldmx-sw/scripts/ldmx-env.sh
+source $ldmx_env_path
 
-dblib_dir=${base_dir}/data/dblib
+dblib_dir=/standard/ldmxuva/data/dblib
 
 ### arguments: {run number} {target material} {A' mass} {scale from energy} {scale to energy}
 run_number=$1
@@ -40,4 +39,4 @@ let events=`wc -l ${unscaled_fname} | awk -F" " '{print $1}'`-1
 
 massMeV="$(echo "$mass * 1000" | bc)"
 
-g4db-scale --scale-APrime -o ${scaled_fname} -E ${scale_to_energy} -Z ${material_Z[${material}]} -N ${events} -M ${massMeV} ${unscaled_fname}
+ldmx g4db-scale --scale-APrime -o ${scaled_fname} -E ${scale_to_energy} -Z ${material_Z[${material}]} -N ${events} -M ${massMeV} ${unscaled_fname}

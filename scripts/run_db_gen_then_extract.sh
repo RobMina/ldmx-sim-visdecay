@@ -1,24 +1,24 @@
 #!/bin/bash
-base_dir=/home/ram2aq/ldmx
+base_dir=${PWD}
 
 ### setting up dbgen
 module load apptainer
-dbgen_env_path=$base_dir/db-gen-lib/env_w_apptainer.sh
+alias singularity="apptainer"
+dbgen_env_path=$base_dir/scripts/db-gen-lib-env.sh
 source $dbgen_env_path
 
 dbgen_version=v4.6
-dbgen_cachedir=/scratch/ram2aq/cache
-dbgen_workdir=/scratch/ram2aq/work
-dbgen_destdir=/scratch/ram2aq/temp
+dbgen_cachedir=/scratch/${USER}/cache
+dbgen_workdir=/scratch/${USER}/work
+dbgen_destdir=/scratch/${USER}/temp
 dbgen use $dbgen_version
 dbgen cache $dbgen_cachedir
 dbgen work $dbgen_workdir
 dbgen dest $dbgen_destdir
 
-### setting up G4DarkBreM (needed for g4db-extract-library)
-source $base_dir/G4DarkBreM_mod/setup.sh
-module load gcc
-module load boost
+### setting up ldmx (needed for g4db-extract-library)
+ldmx_env_path=$base_dir/ldmx-sw/scripts/ldmx-env.sh
+source $ldmx_env_path
 
 ### arguments: {run number} {target material} {A' mass} {incident energy} {number of events} {output path}
 run_number=$1
@@ -38,7 +38,7 @@ fi
 dbgen run --run ${run_number} --nevents ${events} --max_energy ${energy} --min_energy ${energy} --apmass ${mass} --target ${material} --lepton electron
 dbgen_output=$dbgen_destdir/electron_${material}_MaxE_${energy}_MinE_${energy}_RelEStep_0.1_UndecayedAP_mA_${mass}_run_${run_number}
 ### extract only relevant info (recoil e and A' kinematics) to csv file
-g4db-extract-library -o ${output_filename} ${dbgen_output}
+ldmx g4db-extract-library -o ${output_filename} ${dbgen_output}
 ### delete the lhe file
 rm -rf ${dbgen_output}
 
@@ -60,7 +60,7 @@ while [ ${eventsSoFar} -lt ${events} ]; do
   dbgen run --run ${run_number} --nevents ${events} --max_energy ${energy} --min_energy ${energy} --apmass ${mass} --target ${material} --lepton electron
   dbgen_output=$dbgen_destdir/electron_${material}_MaxE_${energy}_MinE_${energy}_RelEStep_0.1_UndecayedAP_mA_${mass}_run_${run_number}
   ### extract only relevant info (recoil e and A' kinematics) to csv file
-  g4db-extract-library -o ${output_filename} ${dbgen_output}
+  ldmx g4db-extract-library -o ${output_filename} ${dbgen_output}
   ### delete the lhe file
   rm -rf ${dbgen_output}
   ### add the new events from the most recent run into the original run

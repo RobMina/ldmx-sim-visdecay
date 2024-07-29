@@ -1,6 +1,6 @@
 import os
 
-run_script="/home/ram2aq/ldmx/run_g4db_scale.sh"
+run_script="scripts/run_g4db_scale.sh"
 def run_for_params(run_number, material, mass, scale_from_energy, scale_to_energy):
     command = "{run_script} {run_number} {material} {mass} {scale_from_energy} {scale_to_energy}".format(
         run_script=run_script,
