@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# first argument is the _absolute_ path to ldmx-sw
+# first argument is the _absolute_ path to ldmx-sim-visdecay
 PATH_TO_LDMX_SIM_VISDECAY=$1
 # second argument is the _relative_ path to the config script to run
 PATH_TO_CONFIG_SCRIPT=$2

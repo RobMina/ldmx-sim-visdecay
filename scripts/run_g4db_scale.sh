@@ -5,14 +5,13 @@ base_dir=${PWD}
 ldmx_env_path=$base_dir/ldmx-sw/scripts/ldmx-env.sh
 source $ldmx_env_path
 
-dblib_dir=/standard/ldmxuva/data/dblib
-
-### arguments: {run number} {target material} {A' mass} {scale from energy} {scale to energy}
+### arguments: {run number} {target material} {A' mass} {scale from energy} {scale to energy} {directory containing unscaled libs}
 run_number=$1
 material=$2
 mass=$3
 scale_from_energy=$4
 scale_to_energy=$5
+dblib_dir=$6
 
 if [[ `echo "${scale_from_energy} <= ${scale_to_energy}" | bc` == 1 ]]; then
     >&2 echo "Cannot scale from $scale_from_energy to $scale_to_energy -- must scale from higher to lower energy."

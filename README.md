@@ -17,14 +17,17 @@ or singularity. So, we need to make an alias:
 `export TMPDIR=/scratch/<your Rivanna username>`
 
 - Setup the ldmx-sw environment. 
-This will take a long time (~30 minutes) the first time you do it.
+This will take a long time (~30 minutes) the first time you do it, but will be
+relatively quick after the first time.
 `source ldmx-sw/scripts/ldmx-env.sh`
 
-
+- Compile the updated code. This also takes a while, but only the first 
+time.
+`ldmx compile`
 
 ## Table of Contents
 
-### Scripts for Generating MadGraph Dark Brem. Library
+### Scripts for Generating MadGraph Dark Brem Library
 
 - `scripts/db-gen-lib-env.sh`: Set up the MadGraph dark brem container.
 This is sourced within `scripts/run_db_gen_then_extract.sh`.
@@ -44,7 +47,7 @@ creates a library of unscaled DB vertices that is needed for using the
 G4DarkBreM module in simulation. Each material-mass-energy point is submitted
 as a separate job.
 
-### Scripts for Studying G4DarkBreM Dark Brem. Scaling
+### Scripts for Studying G4DarkBreM Dark Brem Scaling
 
 - `scripts/run_g4db_scale.sh`: Set up and run G4DarkBreM scaling of dark brem 
 vertices, starting with a csv file created by `g4db-extract-library` and
@@ -52,6 +55,31 @@ producing another csv file using `g4db-scale`. Note that you must scale from a
 higher energy to a lower energy. This should be run from the base directory of 
 the repository.
 
-- `scripts/perform_scalings.py`: 
+- `scripts/perform_scalings.py`: Automatically run G4DarkBreM scaling for a
+variety of materials, A' masses, and energy scaling points. This runs
+interactively rather than using sbatch.
 
-- `scripts/compile_dblib_into_df.py`: Merge 
+- `scripts/compile_dblib_into_df.py`: Merge and compress csv files from
+`gen_unscaled_library.py` and `perform_scalings.py` into `.feather` files:
+one unscaled and one scaled for each material and A' mass.
+
+- `scripts/fill_dblib_scaling_hists.py`: Create histograms from the `.feather`
+files containing unscaled and scaled dark brem vertices to validate the scaling
+done in G4DarkBreM.
+
+- `scripts/scaling_studies.ipynb`: A Jupyter notebook with code to validate
+the scaling done in G4DarkBreM.
+
+### Scripts for Generating LDMX Dark Brem Signal Samples
+
+- `scripts/test_config.py`: A config file passed to ldmx fire. Configures
+the generator to scale A' kinematics and decays using the updated G4DarkBreM
+module. Takes two arguments: the path to a MG dark brem library and the number
+of events to simulate.
+
+- `scripts/setup_ldmx_and_fire.sh`: setup, then call ldmx fire. Assumes that
+the config scripts takes the same arguments as `test_config.py`: namely, the
+path to a MG dark brem library and the number of events.
+
+- `scripts/gen_signal_samples.py`: automatically configure and launch grid jobs
+using sbatch to generate signal samples for each mass point.
