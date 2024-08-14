@@ -49,7 +49,9 @@ sim = eat.dark_brem(
     'ldmx-det-v14-8gev',
     generators.single_8gev_e_upstream_tagger(),
     scale_APrime = True,
+    #decay_mode = 'no_decay',
     #ap_tau = 1.0E-12,
+    #ap_tau = -1.0,
     dist_decay_min = 0.0,
     dist_decay_max = 4000.0,
     decay_mode = 'flat_decay'
@@ -70,8 +72,6 @@ from LDMX.TrigScint.trigScint import trigScintTrack
 
 import LDMX.Recon.simpleTrigger as trig
 import LDMX.Recon.electronCounter as count
-
-#from LDMX.Analysis import eat
 
 counter = count.ElectronCounter(1, 'counter')
 counter.input_pass_name = 'eat_vis'
@@ -97,8 +97,4 @@ p.sequence = [
         trigScintTrack,
         counter,
         trigger,
-        #eat.PrimaryEcalFrontFaceKinematics(),
-        #eat.PullNuclearEnergy(),
-        #eat.DarkBremKinematics(),
-        #eat.HcalVetoVars()
         ]
