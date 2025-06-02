@@ -2,7 +2,7 @@ import sys
 import os
 import argparse
 
-usage = "ldmx fire %s"%(sys.argv[0])
+usage = "denv fire %s"%(sys.argv[0])
 parser = argparse.ArgumentParser(usage,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("db_event_lib",type=str,default=None,
@@ -81,7 +81,9 @@ trigger = trig.TriggerProcessor('trigger', 8000.)
 trigger.beamEnergy = 8000.
 trigger.thresholds = [ 3160. ]
 
-p.sequence = [
+p.sequence = [ sim ]
+
+""" p.sequence = [
         sim,
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(),
@@ -97,4 +99,4 @@ p.sequence = [
         trigScintTrack,
         counter,
         trigger,
-        ]
+        ] """

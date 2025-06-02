@@ -1,24 +1,29 @@
 #!/bin/bash
-base_dir=${PWD}
 
+# update these with paths to your directories
+dbgen_denv_dir=/home/ram2aq/ldmx/dbgen
+dbgen_version=v5.1.1
+ldmx_denv_dir=/home/ram2aq/ldmx/ldmx-sw
+ldmx_sw_version=v4.3.1
+
+# note: requires denv (https://tomeichlersmith.github.io/denv/)
 ### setting up dbgen
 module load apptainer
-alias singularity="apptainer"
-dbgen_env_path=$base_dir/scripts/db-gen-lib-env.sh
-source $dbgen_env_path
+cd ${dbgen_denv_dir}
+yes | denv init ldmx/dark-brem-lib-gen:${dbgen_version}
 
-dbgen_version=v4.6
-dbgen_cachedir=/scratch/${USER}/cache
-dbgen_workdir=/scratch/${USER}/work
+dbgen_scratchdir=/scratch/${USER}/scratch
 dbgen_destdir=/scratch/${USER}/temp
-dbgen use $dbgen_version
-dbgen cache $dbgen_cachedir
-dbgen work $dbgen_workdir
-dbgen dest $dbgen_destdir
+
+mkdir -p ${dbgen_scratchdir}
+mkdir -p ${dbgen_destdir}
+
+denv config mounts ${dbgen_scratchdir}
+denv config mounts ${dbgen_destdir}
 
 ### setting up ldmx (needed for g4db-extract-library)
-ldmx_env_path=$base_dir/ldmx-sw/scripts/ldmx-env.sh
-source $ldmx_env_path
+cd ${ldmx_denv_dir}
+yes | denv init ldmx/pro:${ldmx_sw_version}
 
 ### arguments: {run number} {target material} {A' mass} {incident energy} {number of events} {output path}
 run_number=$1
@@ -35,12 +40,20 @@ if [[ -f ${output_filename} ]]; then
 fi
 
 ### run dbgen to generate lhe file
-dbgen run --run ${run_number} --nevents ${events} --max_energy ${energy} --min_energy ${energy} --apmass ${mass} --target ${material} --lepton electron
+cd ${dbgen_denv_dir}
+denv dark-brem-lib-gen -o ${dbgen_destdir} -s ${dbgen_scratchdir} --run ${run_number} --nevents ${events} --max-energy ${energy} --min-energy ${energy} --apmass ${mass} --target ${material} --lepton electron
 dbgen_output=$dbgen_destdir/electron_${material}_MaxE_${energy}_MinE_${energy}_RelEStep_0.1_UndecayedAP_mA_${mass}_run_${run_number}
 ### extract only relevant info (recoil e and A' kinematics) to csv file
-ldmx g4db-extract-library -o ${output_filename} ${dbgen_output}
+cd ${ldmx_denv_dir}
+denv g4db-extract-library --aprime-id 1023 -o ${output_filename} ${dbgen_output}
 ### delete the lhe file
 rm -rf ${dbgen_output}
+
+first_line=$(head -n 1 ${output_filename})
+test_line="target_Z,incident_energy,recoil_energy,recoil_px,recoil_py,recoil_pz,centerMomentum_energy,centerMomentum_px,centerMomentum_py,centerMomentum_pz"
+if [[ ${first_line} != ${test_line} ]]; then
+  sed -i '1i\'"$test_line" $output_filename
+fi
 
 let eventsSoFar=`wc -l ${output_filename} | awk -F" " '{print $1}'`-1
 orig_output_filename=${output_filename}
@@ -57,10 +70,12 @@ while [ ${eventsSoFar} -lt ${events} ]; do
   fi
 
   ### run dbgen to generate lhe file
-  dbgen run --run ${run_number} --nevents ${events} --max_energy ${energy} --min_energy ${energy} --apmass ${mass} --target ${material} --lepton electron
+  cd ${dbgen_denv_dir}
+  denv dark-brem-lib-gen -o ${dbgen_destdir} -s ${dbgen_scratchdir} --run ${run_number} --nevents ${events} --max-energy ${energy} --min-energy ${energy} --apmass ${mass} --target ${material} --lepton electron
   dbgen_output=$dbgen_destdir/electron_${material}_MaxE_${energy}_MinE_${energy}_RelEStep_0.1_UndecayedAP_mA_${mass}_run_${run_number}
   ### extract only relevant info (recoil e and A' kinematics) to csv file
-  ldmx g4db-extract-library -o ${output_filename} ${dbgen_output}
+  cd ${ldmx_denv_dir}
+  denv g4db-extract-library --aprime-id 1023 -o ${output_filename} ${dbgen_output}
   ### delete the lhe file
   rm -rf ${dbgen_output}
   ### add the new events from the most recent run into the original run

@@ -1,10 +1,19 @@
 import math
 import os
 
-# this needs to be a relative path from the base of the ldmx-sim-visdecay repo
-run_script = "scripts/setup_ldmx_and_fire.sh"
-# path_to_ldmx_sim_visdecay is an _absolute_ path
-def write_slurm_to_fh(fh, path_to_ldmx_sim_visdecay, 
+# you should modify the following:
+ldmx_denv_dir = "/home/ram2aq/ldmx/ldmx-sw"
+output_dir = "/scratch/ram2aq"
+# note: this one is defined as an _absolute_ path
+db_lib_dir = "/scratch/ram2aq/dblib"
+scripts_dir = "/home/ram2aq/ldmx/ldmx-sim-visdecay/scripts/"
+# note: this path must be relative to the ldmx_denv_dir defined above
+config_path = "test_config.py"
+
+run_script = "{scripts_dir}/setup_ldmx_and_fire.sh".format(
+    scripts_dir=scripts_dir
+)
+def write_slurm_to_fh(fh, path_to_ldmx_denv, 
                       path_to_config_script, path_to_mg_db_lib, n_events,
                       output_path):
     fh.write("#!/bin/bash\n")
@@ -40,21 +49,21 @@ def write_slurm_to_fh(fh, path_to_ldmx_sim_visdecay,
     fh.write("#SBATCH --output={slurm_out}\n".format(slurm_out=slurm_out))
     fh.write("#SBATCH --error={slurm_err}\n".format(slurm_err=slurm_err))
     fh.write("\n")
-    fh.write("{path_to_ldmx_sim_visdecay}/{run_script} {path_to_ldmx_sim_visdecay} {path_to_config_script} {path_to_mg_db_lib} {n_events}\n".format(
+    fh.write("{run_script} {path_to_ldmx_denv} {path_to_config_script} {path_to_mg_db_lib} {n_events}\n".format(
         run_script = run_script,
-        path_to_ldmx_sim_visdecay = path_to_ldmx_sim_visdecay,
+        path_to_ldmx_denv = path_to_ldmx_denv,
         path_to_config_script = path_to_config_script,
         path_to_mg_db_lib = path_to_mg_db_lib,
         n_events = n_events
     ))
     # move output file into desired output path
-    fh.write("mv {path_to_ldmx_sim_visdecay}/{output_fstem}.root {output_path}".format(
-        path_to_ldmx_sim_visdecay=path_to_ldmx_sim_visdecay,
+    fh.write("mv {path_to_ldmx_denv}/{output_fstem}.root {output_path}".format(
+        path_to_ldmx_denv=path_to_ldmx_denv,
         output_fstem=output_fstem,
         output_path=output_path
     ))
 
-def run_for_params(run_number, mass, path_to_ldmx_sim_visdecay, 
+def run_for_params(run_number, mass, path_to_ldmx_denv, 
                       path_to_config_script, db_lib_dir, n_events,
                       output_path):
     db_lib_fname = "{db_lib_dir}/all_mA_{mass}_run_{run_number}.csv".format(
@@ -64,20 +73,12 @@ def run_for_params(run_number, mass, path_to_ldmx_sim_visdecay,
         output_path = output_path, mass = mass, run_number = run_number
     )
     with open(slurm_fname, "w") as fh:
-        write_slurm_to_fh(fh, path_to_ldmx_sim_visdecay, path_to_config_script,
+        write_slurm_to_fh(fh, path_to_ldmx_denv, path_to_config_script,
                           db_lib_fname, n_events, output_path)
     os.system("sbatch {slurm_fname}".format(slurm_fname=slurm_fname))
 
-# you should modify the following:
-my_ldmx_sim_visdecay_path = "/home/ram2aq/test/ldmx-sim-visdecay"
-output_dir = "/scratch/ram2aq"
-# note: this one is defined _relative_ to the ldmx_sim_visdecay path
-config_path = "scripts/test_config.py"
-# note: this one is defined as an _absolute_ path
-db_lib_dir = "/standard/ldmxuva/data/dblib"
-
-for mass in [0.005, 0.01, 0.05, 0.1]:
-    for run_number in [4000]:
-        run_for_params(run_number, mass, my_ldmx_sim_visdecay_path,
+for mass in [0.005]:#, 0.01, 0.05, 0.1]:
+    for run_number in [4100]:
+        run_for_params(run_number, mass, ldmx_denv_dir,
                        config_path, db_lib_dir,
                        10000, output_dir)
